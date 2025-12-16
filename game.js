@@ -28,6 +28,15 @@ const giftTypes = ['🎁', '🎀', '⭐', '🔔', '🎄'];
 let giftSpeed = 2;
 let spawnRate = 0.02;
 
+// Snowflakes array (static positions)
+const snowflakes = [];
+for (let i = 0; i < 50; i++) {
+    snowflakes.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height
+    });
+}
+
 // Controls
 const keys = {};
 
@@ -141,11 +150,9 @@ function drawBackground() {
     
     // Snowflakes
     ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-    for (let i = 0; i < 50; i++) {
-        const x = Math.random() * canvas.width;
-        const y = Math.random() * canvas.height;
+    for (let i = 0; i < snowflakes.length; i++) {
         ctx.beginPath();
-        ctx.arc(x, y, 2, 0, Math.PI * 2);
+        ctx.arc(snowflakes[i].x, snowflakes[i].y, 2, 0, Math.PI * 2);
         ctx.fill();
     }
 }
