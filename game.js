@@ -177,7 +177,7 @@ function gameLoop() {
     updateGifts();
     
     // Spawn gifts with timing control
-    const currentTime = Date.now();
+    const currentTime = performance.now();
     const timeSinceLastSpawn = currentTime - lastSpawnTime;
     
     // Only spawn if enough time has passed AND random check passes
