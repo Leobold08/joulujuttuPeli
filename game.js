@@ -27,6 +27,8 @@ let gifts = [];
 const giftTypes = ['🎁', '🎀', '⭐', '🔔', '🎄'];
 let giftSpeed = 2;
 let spawnRate = 0.02;
+let lastSpawnTime = 0;
+let minSpawnDelay = 500; // Minimum milliseconds between spawns
 
 // Snowflakes array (static positions)
 const snowflakes = [];
@@ -174,9 +176,14 @@ function gameLoop() {
     movePlayer();
     updateGifts();
     
-    // Spawn gifts
-    if (Math.random() < spawnRate) {
+    // Spawn gifts with timing control
+    const currentTime = performance.now();
+    const timeSinceLastSpawn = currentTime - lastSpawnTime;
+    
+    // Only spawn if enough time has passed AND random check passes
+    if (timeSinceLastSpawn >= minSpawnDelay && Math.random() < spawnRate) {
         createGift();
+        lastSpawnTime = currentTime;
     }
     
     animationId = requestAnimationFrame(gameLoop);
@@ -190,6 +197,7 @@ function startGame() {
     gifts = [];
     giftSpeed = 2;
     spawnRate = 0.02;
+    lastSpawnTime = 0;
     player.x = canvas.width / 2 - 25;
     
     scoreDisplay.textContent = score;
