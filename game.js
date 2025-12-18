@@ -133,8 +133,9 @@ canvas.addEventListener('touchstart', (e) => {
     const rect = canvas.getBoundingClientRect();
     const touch = e.touches[0];
     const x = touch.clientX - rect.left;
+    const canvasX = (x / rect.width) * canvas.width;
     
-    if (x < canvas.width / 2) {
+    if (canvasX < canvas.width / 2) {
         touchLeft = true;
         setTimeout(() => { touchLeft = false; }, 200);
     } else {
@@ -148,8 +149,9 @@ canvas.addEventListener('click', (e) => {
     
     const rect = canvas.getBoundingClientRect();
     const x = e.clientX - rect.left;
+    const canvasX = (x / rect.width) * canvas.width;
     
-    if (x < canvas.width / 2) {
+    if (canvasX < canvas.width / 2) {
         touchLeft = true;
         setTimeout(() => { touchLeft = false; }, 200);
     } else {
@@ -241,7 +243,8 @@ function drawPlayer() {
 // Create gift
 function createGift() {
     const rand = Math.random();
-    let itemType, emoji, category;
+    let itemType = null;
+    let emoji, category;
     
     // 70% regular gifts, 15% hazards, 15% power-ups
     if (rand < 0.70) {
@@ -267,7 +270,8 @@ function createGift() {
         type: emoji,
         category: category,
         itemType: itemType,
-        speed: (giftSpeed + Math.random() * 2) * speedMultiplier
+        speed: (giftSpeed + Math.random() * 2) * speedMultiplier,
+        wasSlowed: slowTimeActive
     };
     gifts.push(gift);
 }
@@ -287,9 +291,12 @@ function updateGifts() {
     // Check if slow-time effect expired
     if (slowTimeActive && currentTime > slowTimeEnd) {
         slowTimeActive = false;
-        // Update existing gift speeds
+        // Update existing gift speeds that were slowed
         gifts.forEach(g => {
-            g.speed *= 2.0; // restore speed
+            if (g.wasSlowed) {
+                g.speed *= 2.0; // restore speed
+                g.wasSlowed = false;
+            }
         });
     }
     
@@ -331,8 +338,10 @@ function updateGifts() {
             
             gifts.splice(i, 1);
             
-            // Increase difficulty
-            if (score % 50 === 0 && score > 0) {
+            // Increase difficulty every 50 points (approximate, may vary with multipliers)
+            const difficultyThreshold = Math.floor(score / 50);
+            const previousThreshold = Math.floor((score - points) / 50);
+            if (difficultyThreshold > previousThreshold) {
                 giftSpeed += 0.3;
                 spawnRate = Math.min(spawnRate + 0.002, 0.05);
             }
@@ -365,7 +374,10 @@ function handlePowerUp(type) {
         slowTimeEnd = Date.now() + 5000; // 5 seconds
         // Slow down existing gifts
         gifts.forEach(g => {
-            g.speed *= 0.5;
+            if (!g.wasSlowed) {
+                g.speed *= 0.5;
+                g.wasSlowed = true;
+            }
         });
     } else if (type === 'sparkle') {
         score += 50;
