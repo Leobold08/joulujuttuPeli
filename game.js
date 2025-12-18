@@ -35,7 +35,7 @@ const player = {
 // Gifts array
 let gifts = [];
 const goodItemTypes = ['🎁', '🎀', '⭐', '🔔', '🎄'];
-const badItemTypes = ['🪨']; // coal as bad item
+const badItemTypes = ['🪨']; // rock as bad item
 const powerUpTypes = [
     { emoji: '❤️', type: 'heart' },
     { emoji: '⏳', type: 'hourglass' },
@@ -398,6 +398,8 @@ function gameLoop() {
         return;
     }
     
+    const currentTime = performance.now();
+    
     clear();
     drawBackground();
     updateSnow();
@@ -410,7 +412,6 @@ function gameLoop() {
     
     // Difficulty ramp with occasional bursts
     difficultyTimer++;
-    const currentTime = performance.now();
     
     // Occasional burst mode
     if (difficultyTimer % 600 === 0) { // Every ~10 seconds at 60fps
