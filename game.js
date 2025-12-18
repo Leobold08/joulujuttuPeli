@@ -156,7 +156,13 @@ function updateScorePopups() {
 function togglePause() {
     gamePaused = !gamePaused;
     if (gamePaused) {
-        // Draw pause screen immediately
+        // Draw pause screen immediately with full game state
+        clear();
+        drawBackground();
+        drawPlayer();
+        drawGifts();
+        updateParticles();
+        updateScorePopups();
         drawHUD();
     } else {
         // Resume game loop

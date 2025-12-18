@@ -26,7 +26,7 @@ Tämä on hauska jouluteemainen peli, jossa ohjaat joulupukkia (🎅) ja yrität
 3. Käytä nuolinäppäimiä (← →) tai A ja D -näppäimiä liikkuaksesi vasemmalle ja oikealle
 4. Kerää putoavat joululahjat liikuttamalla joulupukkia niiden alle
 5. Älä anna lahjojen pudota maahan - menetät elämän!
-6. **UUSI!** Paina VÄLILYÖNTIÄ tai P pausettaaksesi peli
+6. **UUSI!** Paina VÄLILYÖNTIÄ tai P pysäyttääksesi pelin
 7. Rakenna combo keräämällä peräkkäisiä lahjoja ilman missauksia saadaksesi bonuspisteitä!
 8. Peli päättyy, kun kaikki kolme elämää on menetetty
 
