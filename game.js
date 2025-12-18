@@ -34,7 +34,7 @@ const player = {
 // Gifts array
 let gifts = [];
 const giftTypes = ['🎁', '🎀', '⭐', '🔔', '🎄'];
-const hazardTypes = ['💣']; // coal/bomb hazard
+const hazardTypes = ['💣']; // hazard items like bombs
 const powerUpTypes = [
     { emoji: '❤️', type: 'heart' },      // life+1
     { emoji: '⏳', type: 'hourglass' }, // slow-time
@@ -50,6 +50,7 @@ let burstInterval = 15000; // spawn burst every 15 seconds
 // Game constants
 const SLOW_TIME_FACTOR = 0.5;
 const SLOW_TIME_DURATION = 5000; // 5 seconds
+const DIFFICULTY_SCORE_THRESHOLD = 50;
 
 // Snowflakes array (animated)
 const snowflakes = [];
@@ -275,7 +276,7 @@ function createGift() {
         category: category,
         itemType: itemType,
         speed: (giftSpeed + Math.random() * 2) * speedMultiplier,
-        wasSlowed: slowTimeActive
+        wasSlowed: false  // Track if this specific item was slowed after creation
     };
     gifts.push(gift);
 }
@@ -343,10 +344,10 @@ function updateGifts() {
             
             gifts.splice(i, 1);
             
-            // Increase difficulty every 50 points (approximate, may vary with multipliers)
+            // Increase difficulty every DIFFICULTY_SCORE_THRESHOLD points
             if (points > 0) {
-                const difficultyThreshold = Math.floor(score / 50);
-                const previousThreshold = Math.floor((score - points) / 50);
+                const difficultyThreshold = Math.floor(score / DIFFICULTY_SCORE_THRESHOLD);
+                const previousThreshold = Math.floor((score - points) / DIFFICULTY_SCORE_THRESHOLD);
                 if (difficultyThreshold > previousThreshold) {
                     giftSpeed += 0.3;
                     spawnRate = Math.min(spawnRate + 0.002, 0.05);
