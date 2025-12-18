@@ -47,6 +47,10 @@ let minSpawnDelay = 500; // Minimum milliseconds between spawns
 let lastBurstTime = 0;
 let burstInterval = 15000; // spawn burst every 15 seconds
 
+// Game constants
+const SLOW_TIME_FACTOR = 0.5;
+const SLOW_TIME_DURATION = 5000; // 5 seconds
+
 // Snowflakes array (animated)
 const snowflakes = [];
 for (let i = 0; i < 50; i++) {
@@ -243,7 +247,7 @@ function drawPlayer() {
 // Create gift
 function createGift() {
     const rand = Math.random();
-    let itemType = null;
+    let itemType = undefined;
     let emoji, category;
     
     // 70% regular gifts, 15% hazards, 15% power-ups
@@ -260,7 +264,7 @@ function createGift() {
         itemType = powerUp.type;
     }
     
-    const speedMultiplier = slowTimeActive ? 0.5 : 1.0;
+    const speedMultiplier = slowTimeActive ? SLOW_TIME_FACTOR : 1.0;
     
     const gift = {
         x: Math.random() * (canvas.width - 40),
@@ -294,7 +298,7 @@ function updateGifts() {
         // Update existing gift speeds that were slowed
         gifts.forEach(g => {
             if (g.wasSlowed) {
-                g.speed *= 2.0; // restore speed
+                g.speed /= SLOW_TIME_FACTOR; // restore speed
                 g.wasSlowed = false;
             }
         });
@@ -306,10 +310,11 @@ function updateGifts() {
         // Check collision with player
         if (checkCollision(player, gifts[i])) {
             const item = gifts[i];
+            let points = 0;
             
             if (item.category === 'gift') {
                 // Good gift caught
-                const points = Math.floor(10 * multiplier);
+                points = Math.floor(10 * multiplier);
                 score += points;
                 scoreDisplay.textContent = score;
                 combo++;
@@ -339,11 +344,13 @@ function updateGifts() {
             gifts.splice(i, 1);
             
             // Increase difficulty every 50 points (approximate, may vary with multipliers)
-            const difficultyThreshold = Math.floor(score / 50);
-            const previousThreshold = Math.floor((score - points) / 50);
-            if (difficultyThreshold > previousThreshold) {
-                giftSpeed += 0.3;
-                spawnRate = Math.min(spawnRate + 0.002, 0.05);
+            if (points > 0) {
+                const difficultyThreshold = Math.floor(score / 50);
+                const previousThreshold = Math.floor((score - points) / 50);
+                if (difficultyThreshold > previousThreshold) {
+                    giftSpeed += 0.3;
+                    spawnRate = Math.min(spawnRate + 0.002, 0.05);
+                }
             }
         }
         // Remove if off screen and lose life (only for good gifts)
@@ -371,11 +378,11 @@ function handlePowerUp(type) {
         livesDisplay.textContent = lives;
     } else if (type === 'hourglass') {
         slowTimeActive = true;
-        slowTimeEnd = Date.now() + 5000; // 5 seconds
+        slowTimeEnd = Date.now() + SLOW_TIME_DURATION;
         // Slow down existing gifts
         gifts.forEach(g => {
             if (!g.wasSlowed) {
-                g.speed *= 0.5;
+                g.speed *= SLOW_TIME_FACTOR;
                 g.wasSlowed = true;
             }
         });
