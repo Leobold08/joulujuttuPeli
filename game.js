@@ -418,12 +418,6 @@ function gameLoop() {
     
     // Spawn gifts with timing control
     const currentTime = performance.now();
-    
-    // Initialize lastSpawnTime on first run
-    if (lastSpawnTime === 0) {
-        lastSpawnTime = currentTime;
-    }
-    
     const timeSinceLastSpawn = currentTime - lastSpawnTime;
     
     // Only spawn if enough time has passed to ensure items are collectible
@@ -449,7 +443,7 @@ function startGame() {
     scorePopups = [];
     giftSpeed = 2.5; // Increased for harder difficulty
     minSpawnDelay = 2000; // Reset to initial delay
-    lastSpawnTime = 0;
+    lastSpawnTime = performance.now(); // Initialize to current time to prevent immediate spawn
     slowDownActive = false;
     slowDownTimer = 0;
     player.x = canvas.width / 2 - 25;
