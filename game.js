@@ -49,6 +49,7 @@ let lastSpawnTime = 0;
 let minSpawnDelay = 600; // Decreased from 800 for harder difficulty
 let slowDownActive = false;
 let slowDownTimer = 0;
+let lastLevelScore = 0; // Track last score where level increased
 
 // Particles for visual effects
 let particles = [];
@@ -258,11 +259,13 @@ function updateGifts() {
             
             gifts.splice(i, 1);
             
-            // Increase difficulty more aggressively
-            if (score % 10 === 0 && score > 0) {
+            // Increase difficulty more aggressively (only once per level)
+            const newLevel = Math.floor(score / 10) + 1;
+            if (newLevel > level) {
                 giftSpeed += 0.4; // Increased from 0.3
                 spawnRate = Math.min(spawnRate + 0.002, MAX_SPAWN_RATE); // Increased from 0.001
-                level = Math.floor(score / 10) + 1;
+                level = newLevel;
+                lastLevelScore = score;
             }
         }
         // Remove if off screen and lose life
@@ -447,6 +450,7 @@ function startGame() {
     lastSpawnTime = 0;
     slowDownActive = false;
     slowDownTimer = 0;
+    lastLevelScore = 0;
     player.x = canvas.width / 2 - 25;
     
     scoreDisplay.textContent = score;
