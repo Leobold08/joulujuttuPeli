@@ -43,10 +43,8 @@ const itemEffects = {
     '🎄': { points: 1, name: 'Kuusi', description: '+1 elämä' }
 };
 let giftSpeed = 2.5; // Increased from 1.5 for harder difficulty
-let spawnRate = 0.025; // Increased from 0.015
-const MAX_SPAWN_RATE = 0.05; // Increased from 0.03
 let lastSpawnTime = 0;
-let minSpawnDelay = 600; // Decreased from 800 for harder difficulty
+let minSpawnDelay = 2000; // Increased to 2 seconds to ensure items can be collected
 let slowDownActive = false;
 let slowDownTimer = 0;
 
@@ -262,7 +260,7 @@ function updateGifts() {
             const newLevel = Math.floor(score / 10) + 1;
             if (newLevel > level) {
                 giftSpeed += 0.4; // Increased from 0.3
-                spawnRate = Math.min(spawnRate + 0.002, MAX_SPAWN_RATE); // Increased from 0.001
+                minSpawnDelay = Math.max(minSpawnDelay - 100, 1000); // Decrease delay but keep it collectible
                 level = newLevel;
             }
         }
@@ -420,10 +418,16 @@ function gameLoop() {
     
     // Spawn gifts with timing control
     const currentTime = performance.now();
+    
+    // Initialize lastSpawnTime on first run
+    if (lastSpawnTime === 0) {
+        lastSpawnTime = currentTime;
+    }
+    
     const timeSinceLastSpawn = currentTime - lastSpawnTime;
     
-    // Only spawn if enough time has passed AND random check passes
-    if (timeSinceLastSpawn >= minSpawnDelay && Math.random() < spawnRate) {
+    // Only spawn if enough time has passed to ensure items are collectible
+    if (timeSinceLastSpawn >= minSpawnDelay) {
         createGift();
         lastSpawnTime = currentTime;
     }
@@ -444,7 +448,7 @@ function startGame() {
     particles = [];
     scorePopups = [];
     giftSpeed = 2.5; // Increased for harder difficulty
-    spawnRate = 0.025; // Increased for harder difficulty
+    minSpawnDelay = 2000; // Reset to initial delay
     lastSpawnTime = 0;
     slowDownActive = false;
     slowDownTimer = 0;
