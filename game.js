@@ -15,7 +15,7 @@ let gameRunning = false;
 let gamePaused = false;
 let score = 0;
 let lives = 3;
-let highScore = localStorage.getItem('highScore') || 0;
+let highScore = parseInt(localStorage.getItem('highScore')) || 0;
 let combo = 0;
 let maxCombo = 0;
 let level = 1;
@@ -36,6 +36,7 @@ let gifts = [];
 const giftTypes = ['🎁', '🎀', '⭐', '🔔', '🎄'];
 let giftSpeed = 1.5; // Reduced from 2 for better playability
 let spawnRate = 0.015; // Reduced from 0.02
+const MAX_SPAWN_RATE = 0.03; // Maximum spawn rate cap
 let lastSpawnTime = 0;
 let minSpawnDelay = 800; // Increased from 500 for better spacing
 
@@ -62,18 +63,16 @@ const keys = {};
 
 document.addEventListener('keydown', (e) => {
     keys[e.key] = true;
-});
-
-document.addEventListener('keyup', (e) => {
-    keys[e.key] = false;
-});
-
-// Pause functionality
-document.addEventListener('keydown', (e) => {
+    
+    // Pause functionality
     if ((e.key === 'p' || e.key === 'P' || e.key === ' ') && gameRunning) {
         e.preventDefault();
         togglePause();
     }
+});
+
+document.addEventListener('keyup', (e) => {
+    keys[e.key] = false;
 });
 
 // Draw player (Santa)
@@ -210,7 +209,7 @@ function updateGifts() {
             // Increase difficulty more gradually
             if (score % 15 === 0 && score > 0) {
                 giftSpeed += 0.3; // Reduced from 0.5
-                spawnRate = Math.min(spawnRate + 0.001, 0.03); // Cap the spawn rate
+                spawnRate = Math.min(spawnRate + 0.001, MAX_SPAWN_RATE);
                 level = Math.floor(score / 15) + 1;
             }
         }
