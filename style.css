@@ -37,9 +37,10 @@ h1 {
     margin-bottom: 15px;
     font-size: 1.3em;
     font-weight: bold;
+    gap: 10px;
 }
 
-.score, .lives {
+.score, .lives, .high-score {
     background: rgba(255, 215, 0, 0.2);
     padding: 10px 20px;
     border-radius: 10px;

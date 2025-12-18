@@ -11,17 +11,21 @@
         <h1>🎄 Kerää Joululahjoja! 🎄</h1>
         <div class="info-panel">
             <div class="score">Pisteet: <span id="score">0</span></div>
+            <div class="high-score">Ennätys: <span id="highScore">0</span></div>
             <div class="lives">Elämät: <span id="lives">3</span></div>
         </div>
         <canvas id="gameCanvas" width="800" height="600"></canvas>
         <div class="controls">
             <p>Käytä nuolinäppäimiä ← → tai A ja D liikkuaksesi</p>
+            <p>Paina VÄLILYÖNTI tai P pysäyttääksesi pelin</p>
             <button id="startBtn">Aloita Peli</button>
             <button id="restartBtn" style="display:none;">Pelaa Uudelleen</button>
         </div>
         <div id="gameOver" class="game-over" style="display:none;">
             <h2>Peli Päättyi!</h2>
             <p>Keräsit <span id="finalScore">0</span> lahjaa!</p>
+            <p id="maxComboDisplay" style="display:none;">Paras combo: <span id="maxCombo">0</span>x</p>
+            <p id="newHighScore" style="display:none; color: #FFD700; font-weight: bold;">🎉 Uusi ennätys! 🎉</p>
         </div>
     </div>
     <script src="game.js"></script>
