@@ -51,6 +51,7 @@ let burstInterval = 15000; // spawn burst every 15 seconds
 const SLOW_TIME_FACTOR = 0.5;
 const SLOW_TIME_DURATION = 5000; // 5 seconds
 const DIFFICULTY_SCORE_THRESHOLD = 50;
+const TOUCH_DURATION = 200; // milliseconds for touch input
 
 // Snowflakes array (animated)
 const snowflakes = [];
@@ -130,6 +131,19 @@ btnRight.addEventListener('mouseup', (e) => {
     touchRight = false;
 });
 
+// Helper function for canvas tap controls
+function handleCanvasTap(x, rect) {
+    const canvasX = (x / rect.width) * canvas.width;
+    
+    if (canvasX < canvas.width / 2) {
+        touchLeft = true;
+        setTimeout(() => { touchLeft = false; }, TOUCH_DURATION);
+    } else {
+        touchRight = true;
+        setTimeout(() => { touchRight = false; }, TOUCH_DURATION);
+    }
+}
+
 // Canvas tap controls - tap left/right side to move
 canvas.addEventListener('touchstart', (e) => {
     e.preventDefault();
@@ -138,15 +152,7 @@ canvas.addEventListener('touchstart', (e) => {
     const rect = canvas.getBoundingClientRect();
     const touch = e.touches[0];
     const x = touch.clientX - rect.left;
-    const canvasX = (x / rect.width) * canvas.width;
-    
-    if (canvasX < canvas.width / 2) {
-        touchLeft = true;
-        setTimeout(() => { touchLeft = false; }, 200);
-    } else {
-        touchRight = true;
-        setTimeout(() => { touchRight = false; }, 200);
-    }
+    handleCanvasTap(x, rect);
 });
 
 canvas.addEventListener('click', (e) => {
@@ -154,15 +160,7 @@ canvas.addEventListener('click', (e) => {
     
     const rect = canvas.getBoundingClientRect();
     const x = e.clientX - rect.left;
-    const canvasX = (x / rect.width) * canvas.width;
-    
-    if (canvasX < canvas.width / 2) {
-        touchLeft = true;
-        setTimeout(() => { touchLeft = false; }, 200);
-    } else {
-        touchRight = true;
-        setTimeout(() => { touchRight = false; }, 200);
-    }
+    handleCanvasTap(x, rect);
 });
 
 // Sound stub
@@ -291,7 +289,7 @@ function drawGifts() {
 
 // Update gifts
 function updateGifts() {
-    const currentTime = Date.now();
+    const currentTime = performance.now();
     
     // Check if slow-time effect expired
     if (slowTimeActive && currentTime > slowTimeEnd) {
@@ -379,7 +377,7 @@ function handlePowerUp(type) {
         livesDisplay.textContent = lives;
     } else if (type === 'hourglass') {
         slowTimeActive = true;
-        slowTimeEnd = Date.now() + SLOW_TIME_DURATION;
+        slowTimeEnd = performance.now() + SLOW_TIME_DURATION;
         // Slow down existing gifts
         gifts.forEach(g => {
             if (!g.wasSlowed) {
