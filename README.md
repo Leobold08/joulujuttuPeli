@@ -9,15 +9,20 @@ Tämä on hauska jouluteemainen peli, jossa ohjaat joulupukkia (🎅) ja yrität
 ## Ominaisuudet
 
 - 🎅 Ohjaa joulupukkia nuolinäppäimillä tai A/D-näppäimillä
-- 🎁 Kerää erilaisia joululahjoja: lahjoja, rusetteja, tähtiä, kelloja ja joulukuusia
+- 🎁 Kerää erilaisia joululahjoja, joilla on eri vaikutukset:
+  - 🎁 **Lahja**: 1 piste
+  - 🎀 **Rusetti**: 2 pistettä
+  - ⭐ **Tähti**: 3 pistettä
+  - 🔔 **Kello**: Hidastaa kaikkien lahjojen putoamista 3 sekunniksi
+  - 🎄 **Kuusi**: Antaa yhden lisäelämän (maksimi 3 elämää)
 - ⭐ Peli vaikeutuu progressiivisesti - lahjat putoavat nopeammin pisteiden karttuessa
-- 🔥 **UUSI!** Combo-järjestelmä - saat bonuspisteitä peräkkäisistä kiinni otetuista lahjoista
+- 🔥 Combo-järjestelmä - saat bonuspisteitä peräkkäisistä kiinni otetuista lahjoista
 - 🎨 Kaunis jouluinen teema vihreällä taustalla ja animoiduilla lumihiutaleilla
 - ❤️ Kolme elämää - yritä kerätä mahdollisimman monta lahjaa!
-- ⏸️ **UUSI!** Pauseta peli välilyönnillä tai P-näppäimellä
-- 🏆 **UUSI!** Ennätysten seuranta - paras pisteesi tallentuu automaattisesti
-- 💫 **UUSI!** Visuaalisia efektejä - partikkelit ja pistepopupit lahjojen keräämisestä
-- 📊 **UUSI!** Tasojärjestelmä - näet nykyisen vaikeustason pelin aikana
+- ⏸️ Pauseta peli välilyönnillä tai P-näppäimellä
+- 🏆 Ennätysten seuranta - paras pisteesi tallentuu automaattisesti
+- 💫 Visuaalisia efektejä - partikkelit ja pistepopupit lahjojen keräämisestä
+- 📊 Tasojärjestelmä - näet nykyisen vaikeustason pelin aikana
 
 ## Kuinka pelata
 
@@ -31,9 +36,13 @@ Tämä on hauska jouluteemainen peli, jossa ohjaat joulupukkia (🎅) ja yrität
 8. Peli päättyy, kun kaikki kolme elämää on menetetty
 
 ### Pisteytys
-- Jokainen lahja: 1 piste
+- 🎁 Lahja: 1 piste
+- 🎀 Rusetti: 2 pistettä
+- ⭐ Tähti: 3 pistettä
+- 🔔 Kello: 1 piste + hidastaa putoamista 3 sekunniksi
+- 🎄 Kuusi: 1 piste + 1 lisäelämä (jos elämät < 3)
 - Combo bonus: +1 piste joka 5. peräkkäisestä kiinni otetusta lahjasta
-- Vaikeus kasvaa: Joka 15. pisteen jälkeen lahjat putoavat nopeammin
+- Vaikeus kasvaa: Joka 10. pisteen jälkeen lahjat putoavat nopeammin ja ilmestyvät tiheämmin
 
 ## Tekninen toteutus
 

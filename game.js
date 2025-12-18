@@ -34,11 +34,21 @@ const player = {
 // Gifts array
 let gifts = [];
 const giftTypes = ['🎁', '🎀', '⭐', '🔔', '🎄'];
-let giftSpeed = 1.5; // Reduced from 2 for better playability
-let spawnRate = 0.015; // Reduced from 0.02
-const MAX_SPAWN_RATE = 0.03; // Maximum spawn rate cap
+// Item effects configuration
+const itemEffects = {
+    '🎁': { points: 1, name: 'Lahja', description: '1 piste' },
+    '🎀': { points: 2, name: 'Rusetti', description: '2 pistettä' },
+    '⭐': { points: 3, name: 'Tähti', description: '3 pistettä' },
+    '🔔': { points: 1, name: 'Kello', description: 'Hidastaa putoamista' },
+    '🎄': { points: 1, name: 'Kuusi', description: '+1 elämä' }
+};
+let giftSpeed = 2.5; // Increased from 1.5 for harder difficulty
+let spawnRate = 0.025; // Increased from 0.015
+const MAX_SPAWN_RATE = 0.05; // Increased from 0.03
 let lastSpawnTime = 0;
-let minSpawnDelay = 800; // Increased from 500 for better spacing
+let minSpawnDelay = 600; // Decreased from 800 for harder difficulty
+let slowDownActive = false;
+let slowDownTimer = 0;
 
 // Particles for visual effects
 let particles = [];
@@ -118,11 +128,11 @@ function updateParticles() {
 }
 
 // Create score popup
-function createScorePopup(x, y, points) {
+function createScorePopup(x, y, text) {
     scorePopups.push({
         x: x,
         y: y,
-        points: points,
+        text: text,
         life: 1.0
     });
 }
@@ -145,8 +155,9 @@ function updateScorePopups() {
             ctx.fillStyle = '#FFD700';
             ctx.strokeStyle = '#000';
             ctx.lineWidth = 2;
-            ctx.strokeText(`+${popup.points}`, popup.x, popup.y);
-            ctx.fillText(`+${popup.points}`, popup.x, popup.y);
+            const displayText = typeof popup.text === 'number' ? `+${popup.text}` : popup.text;
+            ctx.strokeText(displayText, popup.x, popup.y);
+            ctx.fillText(displayText, popup.x, popup.y);
         }
     }
     ctx.restore();
@@ -193,13 +204,46 @@ function drawGifts() {
 
 // Update gifts
 function updateGifts() {
+    // Update slowdown timer
+    if (slowDownActive) {
+        slowDownTimer--;
+        if (slowDownTimer <= 0) {
+            slowDownActive = false;
+        }
+    }
+    
     for (let i = gifts.length - 1; i >= 0; i--) {
-        gifts[i].y += gifts[i].speed;
+        // Apply slowdown effect if active
+        let currentSpeed = gifts[i].speed;
+        if (slowDownActive) {
+            currentSpeed *= 0.5; // 50% speed reduction
+        }
+        gifts[i].y += currentSpeed;
         
         // Check collision with player
         if (checkCollision(player, gifts[i])) {
-            // Calculate points (combo bonus)
-            let points = 1 + Math.floor(combo / 5);
+            const giftType = gifts[i].type;
+            const effect = itemEffects[giftType];
+            
+            // Apply item effect based on type
+            let points = effect.points;
+            
+            if (giftType === '🔔') {
+                // Bell: Slow down effect
+                slowDownActive = true;
+                slowDownTimer = 180; // 3 seconds at 60fps
+                createScorePopup(gifts[i].x + 20, gifts[i].y - 20, 'Hidastus!');
+            } else if (giftType === '🎄') {
+                // Christmas tree: Add life
+                if (lives < 3) {
+                    lives++;
+                    livesDisplay.textContent = lives;
+                    createScorePopup(gifts[i].x + 20, gifts[i].y - 20, '+1 Elämä!');
+                }
+            }
+            
+            // Add combo bonus
+            points += Math.floor(combo / 5);
             score += points;
             combo++;
             if (combo > maxCombo) maxCombo = combo;
@@ -208,15 +252,17 @@ function updateGifts() {
             
             // Create visual feedback
             createParticles(gifts[i].x + 20, gifts[i].y + 20);
-            createScorePopup(gifts[i].x + 20, gifts[i].y, points);
+            if (giftType !== '🔔' && giftType !== '🎄') {
+                createScorePopup(gifts[i].x + 20, gifts[i].y, points);
+            }
             
             gifts.splice(i, 1);
             
-            // Increase difficulty more gradually
-            if (score % 15 === 0 && score > 0) {
-                giftSpeed += 0.3; // Reduced from 0.5
-                spawnRate = Math.min(spawnRate + 0.001, MAX_SPAWN_RATE);
-                level = Math.floor(score / 15) + 1;
+            // Increase difficulty more aggressively
+            if (score % 10 === 0 && score > 0) {
+                giftSpeed += 0.4; // Increased from 0.3
+                spawnRate = Math.min(spawnRate + 0.002, MAX_SPAWN_RATE); // Increased from 0.001
+                level = Math.floor(score / 10) + 1;
             }
         }
         // Remove if off screen and lose life
@@ -300,7 +346,7 @@ function drawBackground() {
     }
 }
 
-// Draw HUD (combo, level, pause indicator)
+// Draw HUD (combo, level, pause indicator, slowdown indicator)
 function drawHUD() {
     ctx.save();
     ctx.font = 'bold 20px Arial';
@@ -320,6 +366,15 @@ function drawHUD() {
     const levelText = `Level: ${level}`;
     ctx.strokeText(levelText, 10, 55);
     ctx.fillText(levelText, 10, 55);
+    
+    // Slowdown indicator
+    if (slowDownActive) {
+        ctx.fillStyle = '#00FFFF';
+        const slowText = `Hidastus: ${Math.ceil(slowDownTimer / 60)}s`;
+        ctx.strokeText(slowText, 10, 80);
+        ctx.fillText(slowText, 10, 80);
+        ctx.fillStyle = '#FFD700'; // Reset color
+    }
     
     // Pause indicator
     if (gamePaused) {
@@ -387,9 +442,11 @@ function startGame() {
     gifts = [];
     particles = [];
     scorePopups = [];
-    giftSpeed = 1.5;
-    spawnRate = 0.015;
+    giftSpeed = 2.5; // Increased for harder difficulty
+    spawnRate = 0.025; // Increased for harder difficulty
     lastSpawnTime = 0;
+    slowDownActive = false;
+    slowDownTimer = 0;
     player.x = canvas.width / 2 - 25;
     
     scoreDisplay.textContent = score;
